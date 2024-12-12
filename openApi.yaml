@@ -1,0 +1,135 @@
+openapi: 3.0.1
+info:
+  title: Badminton Reservation API
+  description: API pour la gestion des réservations des terrains de badminton.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Serveur local
+
+paths:
+  /register:
+    post:
+      summary: Inscription d'un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "john_doe"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Paramètres manquants ou invalides
+        '409':
+          description: Utilisateur déjà existant
+
+  /login:
+    post:
+      summary: Connexion d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "john_doe"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: Authentification réussie
+        '403':
+          description: Mot de passe invalide
+        '404':
+          description: Utilisateur introuvable
+
+  /reservations:
+    get:
+      summary: Liste les réservations de l'utilisateur connecté
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des réservations retournée avec succès
+        '401':
+          description: Utilisateur non authentifié
+
+    post:
+      summary: Crée une réservation pour un terrain
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  example: "2023-12-15"
+                time:
+                  type: string
+                  example: "10:00"
+                terrainId:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Réservation créée avec succès
+        '400':
+          description: Paramètres manquants ou invalides
+        '409':
+          description: Conflit de réservation
+
+
+  /terrains/{terrainId}/availability:
+    patch:
+      summary: Modifie la disponibilité d'un terrain (Admin uniquement)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: terrainId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID du terrain à modifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isAvailable:
+                  type: boolean
+                  example: false
+      responses:
+        '200':
+          description: Disponibilité du terrain mise à jour avec succès
+        '403':
+          description: Accès interdit
+        '404':
+          description: Terrain introuvable
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

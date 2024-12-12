@@ -1,0 +1,50 @@
+openapi: 3.0.0
+info:
+  title: Badminton Reservation API
+  description: API pour réserver des terrains de badminton.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /terrains:
+    get:
+      summary: Liste des terrains disponibles
+      responses:
+        '200':
+          description: Liste des terrains
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    isAvailable:
+                      type: boolean
+  /reservations:
+    post:
+      summary: Effectuer une réservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                terrainId:
+                  type: integer
+                date:
+                  type: string
+                time:
+                  type: string
+      responses:
+        '201':
+          description: Réservation créée avec succès
+        '400':
+          description: Données invalides
